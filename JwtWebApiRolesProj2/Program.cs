@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Filters;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,10 +11,21 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)         //This is the Authentication Scheme
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+    {
+        Description = "Standard Authorization header using the Bearer Scheme (\"bearer {token}\")",
+        In = ParameterLocation.Header,
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey
+    });
+
+    options.OperationFilter<SecurityRequirementsOperationFilter>(); //Install the nugret package Swashbuckle.AspNetCore.Filters: developed by Matt Frear (Kudos to Matt)
+});
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme) //This is the Authentication Scheme, Add/reference: using Microsoft.AspNet.Core.Authentication.JwtBearer package
     .AddJwtBearer(options => {
-        options.TokenValidationParameters = new TokenValidationParameters       //Make sure and add reference using Microsoft.IdentityModel.Tokens...
+        options.TokenValidationParameters = new TokenValidationParameters  //Make sure and add/reference: using Microsoft.IdentityModel.Tokens...
         {
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8
