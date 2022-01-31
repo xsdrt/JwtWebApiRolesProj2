@@ -10,6 +10,7 @@ using System.Security.Cryptography;
 // A using JWT security token for authorization purposes example project.  Shows how to create a user registration, login a user, return a JWT.
 // Of course this is just a working example, you would want to use the JWT in Authorization header of your  HTTP  requests.
 // To use, you would use the authorize attribute in the methods you would want to restrict to only authorized users.  Maybe do another example for authorized roles etc...
+//OK this is the example for authorized roles....
 
 
 namespace JwtWebApiRolesProj2.Controllers
