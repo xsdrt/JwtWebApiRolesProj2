@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -21,12 +22,30 @@ namespace JwtWebApiRolesProj2.Controllers
     {
         public static User user = new User();       //Intialize the user...
         private readonly IConfiguration _configuration;
+        private readonly IUserService _userService;
 
-        public AuthController(IConfiguration configuration)     //Constuctor for the CreateClaims method using the "secret key" injection
+        public AuthController(IConfiguration configuration, IUserService userService)//Constuctor for the CreateClaims
+                                                                                     //method using the "secret key" injection.
+                                                                                     //Also inject the IUserService method***
         {
             _configuration = configuration;
+            _userService = userService;
         }
 
+        [HttpGet, Authorize]  //Make sure and add the using Microsoft.AspNetCore.Authorization NameSpace,  
+                             //added the attribute Authorize so only authorized users can use this method "GetMe"...
+        public ActionResult<string> GetMe() //This is not the best method (I.E. its a fat contoller lets use a service instead
+                                            // with dependency injection) so lets implement this, I'll comment out the fat method....
+        {
+            var userName = _userService.GetMyName();//Use the injected method (IUserService above)...
+            return Ok(userName);
+
+            //var userName = User?.Identity?.Name; //Simply get me the user name  notice the ?null qualifiers to check if null...
+            //var userName2 = User.FindFirstValue(ClaimTypes.Name);
+            //var role = User.FindFirstValue(ClaimTypes.Role);
+
+            //return Ok(new { userName, userName2, role });
+        }
 
         //Call the register methods below.  But be aware in an actual app would not have this logic in the controller,
         //but use the Repository pattern along with an Authentication Service call and dependency injection....
