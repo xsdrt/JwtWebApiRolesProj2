@@ -20,7 +20,8 @@ namespace JwtWebApiRolesProj2.Controllers
         }
 
         [HttpGet(Name = "GetWeatherForecast"), Authorize(Roles ="Admin")]  //Decorate the HttpGet with the Authorize attribute and reference the
-                                                                           //using Microsoft.AspNetCore.Authorization... 
+                                                                           //using Microsoft.AspNetCore.Authorization... Now only someone with the role of 
+                                                                           //Admin would be able to access the weather forecasts...
         public IEnumerable<WeatherForecast> Get()
         {
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
